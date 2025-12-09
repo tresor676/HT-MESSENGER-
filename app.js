@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, addDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, addDoc, query, where, onSnapshot, orderBy, serverTimestamp, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyC2WG-135oKY_s6xf5-nBBhxncNV9UayQ0",
   authDomain: "tresor-ae58e.firebaseapp.com",
@@ -27,51 +28,80 @@ function showScreen(screen){
   screen.classList.add('active');
 }
 
-// Navigation buttons
-document.getElementById('goRegister').onclick = () => showScreen(registerScreen);
-document.getElementById('goLogin').onclick = () => showScreen(loginScreen);
+// Navigation
+document.getElementById('goRegister').onclick = ()=>showScreen(registerScreen);
+document.getElementById('goLogin').onclick = ()=>showScreen(loginScreen);
 
 // Register
-document.getElementById('registerBtn').onclick = async () => {
+document.getElementById('registerBtn').onclick = async ()=>{
   const name = document.getElementById('registerName').value;
   const email = document.getElementById('registerEmail').value;
   const password = document.getElementById('registerPassword').value;
   try{
     const userCred = await createUserWithEmailAndPassword(auth,email,password);
-    await setDoc(doc(db,'users',userCred.user.uid), {name,email});
+    await setDoc(doc(db,'users',userCred.user.uid),{name,email});
     showScreen(homeScreen);
     loadUsers();
-  } catch(e){ alert(e.message);}
+    loadGroups();
+  }catch(e){ alert(e.message);}
 };
 
 // Login
-document.getElementById('loginBtn').onclick = async () => {
+document.getElementById('loginBtn').onclick = async ()=>{
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   try{
     await signInWithEmailAndPassword(auth,email,password);
     showScreen(homeScreen);
     loadUsers();
-  } catch(e){ alert(e.message);}
+    loadGroups();
+  }catch(e){ alert(e.message);}
 };
 
 // Auth state
 onAuthStateChanged(auth,user=>{
-  if(user) showScreen(homeScreen);
+  if(user) { showScreen(homeScreen); loadUsers(); loadGroups(); }
 });
 
-// Load users
+// Users list
 const usersList = document.getElementById('usersList');
 async function loadUsers(){
   const q = collection(db,'users');
   onSnapshot(q,snapshot=>{
-    usersList.innerHTML = '<h3>Utilisateurs :</h3>';
+    usersList.innerHTML='<h3>Utilisateurs :</h3>';
     snapshot.forEach(doc=>{
       if(doc.id!==auth.currentUser.uid){
-        const btn = document.createElement('button');
-        btn.textContent = doc.data().name;
-        btn.onclick = ()=>openChat(doc.id, doc.data().name);
+        const btn=document.createElement('button');
+        btn.textContent=doc.data().name;
+        btn.onclick=()=>openChat([auth.currentUser.uid, doc.id], doc.data().name);
         usersList.appendChild(btn);
+      }
+    });
+  });
+}
+
+// Groups
+const groupsList = document.getElementById('groupsList');
+document.getElementById('createGroupBtn').onclick = async ()=>{
+  const groupName = prompt("Nom du groupe ?");
+  if(!groupName) return;
+  const docRef = await addDoc(collection(db,'groups'),{
+    name:groupName,
+    members:[auth.currentUser.uid]
+  });
+  loadGroups();
+};
+
+async function loadGroups(){
+  const q = collection(db,'groups');
+  onSnapshot(q,snapshot=>{
+    groupsList.innerHTML='<h3>Groupes :</h3>';
+    snapshot.forEach(doc=>{
+      if(doc.data().members.includes(auth.currentUser.uid)){
+        const btn=document.createElement('button');
+        btn.textContent=doc.data().name;
+        btn.onclick=()=>openChat(doc.id, doc.data().name, true);
+        groupsList.appendChild(btn);
       }
     });
   });
@@ -80,19 +110,27 @@ async function loadUsers(){
 // Chat
 const messagesDiv = document.getElementById('messages');
 let currentChatId = null;
+let isGroupChat = false;
 
-async function openChat(uid,name){
-  currentChatId = uid;
+async function openChat(id, name, group=false){
+  currentChatId=id;
+  isGroupChat=group;
   showScreen(chatScreen);
+  document.getElementById('chatTitle').textContent=name;
   messagesDiv.innerHTML='';
-  const q = query(collection(db,'messages'),where('participants','array-contains',auth.currentUser.uid),orderBy('createdAt'));
+  let q;
+  if(group){
+    q = query(collection(db,'messages'), where('groupId','==',currentChatId), orderBy('createdAt'));
+  } else {
+    q = query(collection(db,'messages'), where('participants','array-contains',auth.currentUser.uid), orderBy('createdAt'));
+  }
   onSnapshot(q,snapshot=>{
     messagesDiv.innerHTML='';
     snapshot.forEach(doc=>{
-      const m = doc.data();
-      if(m.participants.includes(currentChatId)){
-        const div = document.createElement('div');
-        div.className='message ' + (m.from===auth.currentUser.uid?'me':'other');
+      const m=doc.data();
+      if((!group && m.participants.includes(currentChatId)) || group){
+        const div=document.createElement('div');
+        div.className='message '+(m.from===auth.currentUser.uid?'me':'other');
         div.textContent=m.text;
         messagesDiv.appendChild(div);
       }
@@ -101,15 +139,25 @@ async function openChat(uid,name){
   });
 }
 
-document.getElementById('sendBtn').onclick=async ()=>{
-  const text=document.getElementById('newMessage').value;
-  if(!text||!currentChatId) return;
-  await addDoc(collection(db,'messages'),{
-    text,
-    from:auth.currentUser.uid,
-    participants:[auth.currentUser.uid,currentChatId],
-    createdAt:serverTimestamp()
-  });
+// Send message
+document.getElementById('sendBtn').onclick = async ()=>{
+  const text = document.getElementById('newMessage').value;
+  if(!text) return;
+  if(isGroupChat){
+    await addDoc(collection(db,'messages'),{
+      text,
+      from:auth.currentUser.uid,
+      groupId: currentChatId,
+      createdAt: serverTimestamp()
+    });
+  } else {
+    await addDoc(collection(db,'messages'),{
+      text,
+      from:auth.currentUser.uid,
+      participants:[auth.currentUser.uid,currentChatId],
+      createdAt: serverTimestamp()
+    });
+  }
   document.getElementById('newMessage').value='';
 };
 
