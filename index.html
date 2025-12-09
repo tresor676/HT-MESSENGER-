@@ -6,41 +6,44 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Login Screen -->
-  <div id="loginScreen" class="screen active">
-    <h2>Connexion</h2>
-    <input type="email" id="loginEmail" placeholder="Email"><br>
-    <input type="password" id="loginPassword" placeholder="Mot de passe"><br>
-    <button id="loginBtn">Se connecter</button>
-    <p>Pas encore inscrit ? <button id="goRegister">Inscription</button></p>
-  </div>
 
-  <!-- Register Screen -->
-  <div id="registerScreen" class="screen">
-    <h2>Inscription</h2>
-    <input type="text" id="registerName" placeholder="Nom"><br>
-    <input type="email" id="registerEmail" placeholder="Email"><br>
-    <input type="password" id="registerPassword" placeholder="Mot de passe"><br>
-    <button id="registerBtn">S’inscrire</button>
-    <p>Déjà inscrit ? <button id="goLogin">Connexion</button></p>
-  </div>
+<!-- Login Screen -->
+<div id="loginScreen" class="screen active">
+  <h2>Connexion</h2>
+  <input type="email" id="loginEmail" placeholder="Email"><br>
+  <input type="password" id="loginPassword" placeholder="Mot de passe"><br>
+  <button id="loginBtn">Se connecter</button>
+  <p>Pas encore inscrit ? <button id="goRegister">Inscription</button></p>
+</div>
 
-  <!-- Home Screen -->
-  <div id="homeScreen" class="screen">
-    <h2>Liste des utilisateurs / groupes</h2>
-    <div id="usersList"></div>
-    <div id="groupsList"></div>
-  </div>
+<!-- Register Screen -->
+<div id="registerScreen" class="screen">
+  <h2>Inscription</h2>
+  <input type="text" id="registerName" placeholder="Nom"><br>
+  <input type="email" id="registerEmail" placeholder="Email"><br>
+  <input type="password" id="registerPassword" placeholder="Mot de passe"><br>
+  <button id="registerBtn">S’inscrire</button>
+  <p>Déjà inscrit ? <button id="goLogin">Connexion</button></p>
+</div>
 
-  <!-- Chat Screen -->
-  <div id="chatScreen" class="screen">
-    <h2>Conversation</h2>
-    <div id="messages"></div>
-    <input type="text" id="newMessage" placeholder="Tapez un message...">
-    <button id="sendBtn">Envoyer</button>
-    <button id="backHome">Retour</button>
-  </div>
+<!-- Home Screen -->
+<div id="homeScreen" class="screen">
+  <h2>Liste des utilisateurs</h2>
+  <div id="usersList"></div>
+  <h2>Groupes</h2>
+  <div id="groupsList"></div>
+  <button id="createGroupBtn">Créer un groupe</button>
+</div>
 
-  <script type="module" src="app.js"></script>
+<!-- Chat Screen -->
+<div id="chatScreen" class="screen">
+  <h2 id="chatTitle">Conversation</h2>
+  <div id="messages"></div>
+  <input type="text" id="newMessage" placeholder="Tapez un message...">
+  <button id="sendBtn">Envoyer</button>
+  <button id="backHome">Retour</button>
+</div>
+
+<script type="module" src="app.js"></script>
 </body>
   </html>
