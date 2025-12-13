@@ -3,87 +3,77 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 import {
-  collection, addDoc, setDoc, doc,
-  query, where, onSnapshot, getDocs,
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-let userId = null;
-let chatId = null;
+let currentUser = null;
 
-// ---------- AUTH ----------
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    if (document.getElementById("userName")) {
+      document.getElementById("userName").innerText = user.displayName;
+      loadMessages();
+    }
+  } else {
+    if (!location.pathname.endsWith("index.html")) {
+      location.href = "index.html";
+    }
+  }
+});
+
 window.register = async () => {
-  const email = email.value;
+  const email = emailInput.value;
   const pass = password.value;
   const name = document.getElementById("name").value;
-  const u = await createUserWithEmailAndPassword(auth,email,pass);
-  await setDoc(doc(db,"users",u.user.uid),{email,name});
+
+  const res = await createUserWithEmailAndPassword(auth, email, pass);
+  await updateProfile(res.user, { displayName: name });
+  location.href = "chat.html";
 };
 
 window.login = async () => {
-  await signInWithEmailAndPassword(auth,email.value,password.value);
+  await signInWithEmailAndPassword(auth, email.value, password.value);
+  location.href = "chat.html";
 };
 
 window.logout = async () => {
   await signOut(auth);
-  location="index.html";
 };
 
-onAuthStateChanged(auth,u=>{
-  if(!u && location.pathname.includes("chat")) location="index.html";
-  if(u && location.pathname.includes("index")) location="chat.html";
-  if(u) userId=u.uid, loadChats();
-});
+window.sendMessage = async () => {
+  const text = messageInput.value;
+  if (!text) return;
 
-// ---------- CHAT ----------
-async function loadChats(){
-  const q = query(collection(db,"chats"), where("members","array-contains",userId));
-  onSnapshot(q,snap=>{
-    chats.innerHTML="";
-    snap.forEach(d=>{
-      const li=document.createElement("li");
-      li.innerText=d.id;
-      li.onclick=()=>openChat(d.id);
-      chats.append(li);
+  await addDoc(collection(db, "messages"), {
+    text,
+    sender: currentUser.uid,
+    name: currentUser.displayName,
+    time: serverTimestamp()
+  });
+
+  messageInput.value = "";
+};
+
+function loadMessages() {
+  const q = query(collection(db, "messages"));
+  onSnapshot(q, snap => {
+    messages.innerHTML = "";
+    snap.forEach(doc => {
+      const m = doc.data();
+      const div = document.createElement("div");
+      div.className = m.sender === currentUser.uid ? "msg-me" : "msg-other";
+      div.innerText = m.name + ": " + m.text;
+      messages.appendChild(div);
     });
   });
-}
-
-window.createChat = async ()=>{
-  const email=document.getElementById("friendEmail").value;
-  const q=query(collection(db,"users"),where("email","==",email));
-  const s=await getDocs(q);
-  if(s.empty)return alert("Introuvable");
-  const other=s.docs[0].id;
-  await addDoc(collection(db,"chats"),{
-    members:[userId,other],
-    created:serverTimestamp()
-  });
-};
-
-function openChat(id){
-  chatId=id;
-  onSnapshot(collection(db,"chats",id,"messages"),snap=>{
-    messages.innerHTML="";
-    snap.forEach(m=>{
-      const d=m.data();
-      const div=document.createElement("div");
-      div.className=d.sender==userId?"me":"other";
-      div.innerText=d.text;
-      messages.append(div);
-    });
-  });
-}
-
-window.send = async ()=>{
-  const text=document.getElementById("msg").value;
-  if(!text||!chatId)return;
-  await addDoc(collection(db,"chats",chatId,"messages"),{
-    sender:userId,text,created:serverTimestamp()
-  });
-  msg.value="";
-};
+        }
