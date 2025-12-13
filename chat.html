@@ -1,53 +1,28 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Web Clone - Chat</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Chat</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="app">
+<div class="container">
+  <div class="sidebar">
+    <button onclick="logout()">Logout</button>
+    <input id="friendEmail" placeholder="Email ami">
+    <button onclick="createChat()">Créer chat</button>
+    <ul id="chats"></ul>
+  </div>
 
-  <aside class="sidebar">
-
-    <header class="sidebar-header">
-      <div id="me-info">
-        <img id="my-photo" src="" alt="">
-        <div>
-          <div id="my-name">Utilisateur</div>
-          <div id="my-status">en ligne</div>
-        </div>
-      </div>
-      <button id="logout">Quitter</button>
-    </header>
-
-    <div class="search">
-      <input id="new-user-email" placeholder="Email du contact">
-      <button id="create-chat">Créer chat</button>
-    </div>
-
-    <ul id="chats-list" class="chats-list"></ul>
-  </aside>
-
-
-  <section class="chat-window">
-    <header class="chat-header">
-      <div id="chat-title">Sélectionne un chat</div>
-    </header>
-
-    <main id="messages" class="messages"></main>
-
-    <footer class="composer">
-      <input id="message-input" placeholder="Message...">
-      <button id="send">Envoyer</button>
-    </footer>
-  </section>
-
+  <div class="chat">
+    <div id="messages"></div>
+    <input id="msg">
+    <button onclick="send()">Envoyer</button>
+  </div>
 </div>
 
-<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/firebase.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>
-        </html>
+</html>
