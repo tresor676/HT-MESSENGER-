@@ -76,4 +76,4 @@ function loadMessages() {
       messages.appendChild(div);
     });
   });
-        };
+        }
