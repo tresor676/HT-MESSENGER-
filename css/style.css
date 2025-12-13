@@ -1,31 +1,10 @@
-:root{--primary:#128C7E;--bg:#E9EDEF;}
-*{box-sizing:border-box;}
-body,html{margin:0;height:100%;font-family:Arial;background:var(--bg);}
-a{text-decoration:none;}
+body{margin:0;font-family:Arial}
+.login{width:300px;margin:100px auto;text-align:center}
+input,button{width:100%;margin:5px;padding:8px}
 
-.login-page{display:flex;justify-content:center;align-items:center;height:100vh;}
-.card{background:#fff;padding:20px;border-radius:8px;width:330px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
-.card input{width:100%;padding:10px;margin-top:8px;border-radius:5px;border:1px solid #ccc;}
-.row{margin-top:10px;display:flex;gap:8px;}
-.row button{flex:1;background:var(--primary);color:#fff;border:none;padding:8px;border-radius:5px;}
-
-.app{display:flex;height:100vh;}
-.sidebar{width:300px;background:#fff;border-right:1px solid #ddd;display:flex;flex-direction:column;}
-.sidebar-header{padding:12px;display:flex;justify-content:space-between;align-items:center;}
-#me-info{display:flex;gap:10px;align-items:center;}
-#me-info img{width:45px;height:45px;border-radius:50%;background:#ddd;}
-.search{padding:10px;border-bottom:1px solid #eee;}
-.search input{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;margin-bottom:6px;}
-.chats-list{list-style:none;margin:0;padding:0;overflow-y:auto;flex:1;}
-.chats-list li{padding:12px;border-bottom:1px solid #eee;cursor:pointer;}
-
-.chat-window{flex:1;display:flex;flex-direction:column;}
-.chat-header{padding:12px;background:#fff;border-bottom:1px solid #ddd;}
-.messages{flex:1;padding:15px;overflow-y:auto;background:#f7f7f7;}
-.message{max-width:70%;padding:8px;margin:6px 0;border-radius:7px;}
-.message.me{margin-left:auto;background:var(--primary);color:#fff;}
-.message.them{background:#fff;border:1px solid #ddd;}
-
-.composer{padding:10px;display:flex;gap:8px;border-top:1px solid #ddd;}
-.composer input{flex:1;padding:10px;border-radius:25px;border:1px solid #ccc;}
-.composer button{padding:10px 15px;background:var(--primary);border:none;color:#fff;border-radius:25px;}
+.container{display:flex;height:100vh}
+.sidebar{width:30%;border-right:1px solid #ccc;padding:10px}
+.chat{width:70%;padding:10px}
+#messages div{margin:5px;padding:5px;border-radius:5px}
+.me{background:#cfe9ba}
+.other{background:#eee}
