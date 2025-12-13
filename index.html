@@ -1,98 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Messenger 1-1 & Group (WhatsApp style)</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Clone - Login</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar: profile + search + chats + friends -->
-    <aside class="sidebar">
-      <div class="profile">
-        <div class="avatar" id="my-avatar">?</div>
-        <div class="me">
-          <div id="me-name">Invité</div>
-          <div id="me-email" class="muted">—</div>
-        </div>
-        <button id="signout-btn" class="btn small hidden">Déconnexion</button>
-      </div>
 
-      <div class="controls">
-        <input id="search-chats" placeholder="Rechercher chat / ami..." />
-        <div class="btn-row">
-          <button id="btn-new-chat" class="btn">Nouveau chat</button>
-          <button id="btn-new-group" class="btn">Nouveau groupe</button>
-        </div>
-      </div>
+<main class="login-page">
+  <div class="card">
+    <h1>WhatsApp Web Clone</h1>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="chats">Conversations</button>
-        <button class="tab" data-tab="friends">Amis</button>
-        <button class="tab" data-tab="requests">Demandes</button>
-      </div>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Mot de passe">
+    <input id="displayName" type="text" placeholder="Nom (Inscription)">
 
-      <div id="tab-chats" class="tab-content">
-        <ul id="chats-list"></ul>
-      </div>
+    <div class="row">
+      <button id="btn-login">Se connecter</button>
+      <button id="btn-register">S'inscrire</button>
+    </div>
 
-      <div id="tab-friends" class="tab-content hidden">
-        <div class="friend-actions">
-          <input id="friend-email" placeholder="Ajouter ami par email" />
-          <button id="btn-add-friend" class="btn">Ajouter</button>
-        </div>
-        <ul id="friends-list"></ul>
-      </div>
-
-      <div id="tab-requests" class="tab-content hidden">
-        <h4>Demandes reçues</h4>
-        <ul id="requests-list"></ul>
-      </div>
-
-      <div id="auth-area" class="auth card">
-        <input id="email" placeholder="Email" />
-        <input id="password" type="password" placeholder="Mot de passe" />
-        <input id="displayName" placeholder="Nom affiché (optionnel)" />
-        <div class="btn-row">
-          <button id="signup-btn" class="btn">S'inscrire</button>
-          <button id="signin-btn" class="btn">Connexion</button>
-        </div>
-        <p id="auth-msg" class="message muted"></p>
-      </div>
-    </aside>
-
-    <!-- Main chat area -->
-    <main class="main">
-      <div id="empty" class="empty-state">
-        <p>Sélectionne une conversation ou commence une nouvelle.</p>
-      </div>
-
-      <div id="chat-area" class="chat hidden">
-        <header class="chat-header">
-          <div class="chat-info">
-            <div class="avatar" id="chat-avatar">?</div>
-            <div>
-              <div id="chat-title">Chat</div>
-              <div id="chat-sub" class="muted">Participants</div>
-            </div>
-          </div>
-        </header>
-
-        <div id="messages" class="messages"></div>
-
-        <form id="message-form" class="message-form">
-          <input id="message-input" placeholder="Écrire un message..." autocomplete="off" />
-          <button class="btn">Envoyer</button>
-        </form>
-      </div>
-    </main>
+    <p style="font-size:12px;margin-top:10px;color:#555">
+      Après connexion → redirection vers <b>chat.html</b>
+    </p>
   </div>
+</main>
 
-  <!-- Firebase CDN (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="app.js"></script>
+<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/app.js"></script>
+
 </body>
-          </html>
+</html>
