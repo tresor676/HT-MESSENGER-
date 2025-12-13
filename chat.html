@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Chat</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Chat</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
+<div class="app">
   <div class="sidebar">
-    <button onclick="logout()">Logout</button>
+    <h3 id="userName">Utilisateur</h3>
     <input id="friendEmail" placeholder="Email ami">
     <button onclick="createChat()">Créer chat</button>
-    <ul id="chats"></ul>
+    <ul id="chatList"></ul>
+    <button onclick="logout()">Déconnexion</button>
   </div>
 
   <div class="chat">
     <div id="messages"></div>
-    <input id="msg">
-    <button onclick="send()">Envoyer</button>
+    <input id="messageInput" placeholder="Message">
+    <button onclick="sendMessage()">Envoyer</button>
   </div>
 </div>
 
