@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>WhatsApp Clone - Login</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="login">
-  <h2>WhatsApp Clone</h2>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <input id="name" placeholder="Nom (register)">
-  <button onclick="login()">Login</button>
-  <button onclick="register()">Register</button>
+<div class="login-box">
+  <h2>Messagerie</h2>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Mot de passe">
+  <input id="name" type="text" placeholder="Nom (inscription)">
+  <button onclick="login()">Connexion</button>
+  <button onclick="register()">Inscription</button>
 </div>
 
 <script type="module" src="js/firebase.js"></script>
