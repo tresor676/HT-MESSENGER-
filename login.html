@@ -2,23 +2,31 @@
 <html>
 <head>
   <title>HT Messenger - Connexion</title>
-  <script type="module" src="js/auth.js"></script>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Connexion</h2>
+<div class="container">
+  <h2>HT MESSENGER</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Mot de passe">
-<button id="btn">Connexion</button>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Mot de passe">
+
+  <button id="btn">Connexion</button>
+
+  <p style="text-align:center">
+    Pas de compte ?
+    <a href="register.html">Créer un compte</a>
+  </p>
+</div>
 
 <script type="module">
   import { login } from "./js/auth.js";
 
-  document.getElementById("btn").onclick = () => {
+  btn.onclick = () => {
     login(email.value, password.value);
   };
 </script>
 
 </body>
-  </html>
+</html>
