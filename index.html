@@ -2,23 +2,35 @@
 <html>
 <head>
   <title>HT Messenger</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>HT Messenger</h1>
-<p>Utilisateur connecté</p>
+<div class="container">
+  <h1>HT MESSENGER</h1>
+
+  <nav>
+    <button onclick="go('contacts.html')">Contacts</button>
+    <button onclick="go('conversations.html')">Conversations</button>
+    <button onclick="logout()">Déconnexion</button>
+  </nav>
+
+  <p id="status" style="text-align:center"></p>
+</div>
 
 <script type="module">
   import { auth } from "./js/firebase.js";
   import { setupPresence } from "./js/presence.js";
+  import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      setupPresence();
-    }
+    if (!user) location.href = "login.html";
+    setupPresence();
+    status.innerText = "Connecté : " + user.email;
   });
+
+  window.go = p => location.href = p;
+  window.logout = () => signOut(auth);
 </script>
 
 </body>
