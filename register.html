@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HT Messenger - Inscription</title>
+  <script type="module" src="js/auth.js"></script>
+</head>
+<body>
+
+<h2>Créer un compte</h2>
+
+<input id="name" placeholder="Nom">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Mot de passe">
+<button id="btn">S'inscrire</button>
+
+<script type="module">
+  import { register } from "./js/auth.js";
+
+  document.getElementById("btn").onclick = () => {
+    register(
+      email.value,
+      password.value,
+      name.value
+    );
+  };
+</script>
+
+</body>
+</html>
