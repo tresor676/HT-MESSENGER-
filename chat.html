@@ -18,23 +18,23 @@
 </div>
 
 <script type="module">
-  import { loadMessages } from "./js/messages-list.js";
-  import { sendMessage, markAsRead } from "./js/messages.js";
+import { loadMessages } from "./js/messages-list.js";
+import { sendMessage, markAsRead } from "./js/messages.js";
 
-  const convId = new URLSearchParams(location.search).get("convId");
-  const chatDiv = document.getElementById("chat");
+const convId = new URLSearchParams(location.search).get("convId");
+const chatDiv = document.getElementById("chat");
 
-  loadMessages(convId, chatDiv);
-  markAsRead(convId);
+loadMessages(convId, chatDiv);
+markAsRead(convId);
 
-  const msgInput = document.getElementById("msg");
-  const sendBtn = document.getElementById("send");
+const msgInput = document.getElementById("msg");
+const sendBtn = document.getElementById("send");
 
-  sendBtn.onclick = () => {
-    if (!msgInput.value.trim()) return;
-    sendMessage(convId, msgInput.value);
-    msgInput.value = "";
-  };
+sendBtn.onclick = () => {
+  if (!msgInput.value.trim()) return;
+  sendMessage(convId, msgInput.value);
+  msgInput.value = "";
+};
 </script>
 
 </body>
