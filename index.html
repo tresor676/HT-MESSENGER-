@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HT Messenger</title>
+</head>
+<body>
+
+<h1>HT Messenger</h1>
+<p>Utilisateur connecté</p>
+
+<script type="module">
+  import { auth } from "./js/firebase.js";
+  import { setupPresence } from "./js/presence.js";
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      setupPresence();
+    }
+  });
+</script>
+
+</body>
+</html>
