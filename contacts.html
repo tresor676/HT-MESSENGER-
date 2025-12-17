@@ -1,58 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Contacts - HT Messenger</title>
+  <title>Contacts</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Ajouter un contact</h2>
+<div class="container">
+  <h2>Mes contacts</h2>
+  <div id="contacts"></div>
 
-<input id="email" placeholder="Email utilisateur">
-<button id="add">Envoyer demande</button>
+  <h2>Utilisateurs</h2>
+  <div id="users"></div>
 
-<hr>
+  <h2>Demandes reçues</h2>
+  <div id="requests"></div>
 
-<h3>Demandes reçues</h3>
-<ul id="requests"></ul>
+  <button onclick="location.href='index.html'">⬅ Retour</button>
+</div>
 
 <script type="module">
   import { auth, db } from "./js/firebase.js";
-  import { findUserByEmail } from "./js/users-search.js";
+  import {
+    ref,
+    onValue,
+    get
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
   import {
     sendRequest,
     acceptRequest,
     refuseRequest
   } from "./js/contacts.js";
 
-  import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import {
+    createPrivateConversation
+  } from "./js/conversations.js";
 
   auth.onAuthStateChanged(user => {
     if (!user) location.href = "login.html";
 
-    onValue(ref(db, "contactRequests/" + user.uid), snap => {
+    /* =========================
+       🔹 CONTACTS ACCEPTÉS
+    ==========================*/
+    onValue(ref(db, `contacts/${user.uid}`), async snap => {
+      contacts.innerHTML = "";
+      if (!snap.exists()) return;
+
+      for (let uid in snap.val()) {
+        const userSnap = await get(ref(db, `users/${uid}`));
+        if (!userSnap.exists()) continue;
+
+        const u = userSnap.val();
+        const div = document.createElement("div");
+        div.className = "conversation";
+        div.innerHTML = `
+          <strong>${u.displayName}</strong>
+          <small>${u.online ? "🟢 en ligne" : "⚪ hors ligne"}</small>
+        `;
+
+        /* 👉 CLIQUER = OUVRIR / CRÉER DISCUSSION */
+        div.onclick = async () => {
+          const convId = await createPrivateConversation(uid);
+          location.href = `chat.html?convId=${convId}`;
+        };
+
+        contacts.appendChild(div);
+      }
+    });
+
+    /* =========================
+       🔹 UTILISATEURS (NON CONTACTS)
+    ==========================*/
+    onValue(ref(db, "users"), async snap => {
+      users.innerHTML = "";
+      if (!snap.exists()) return;
+
+      const contactsSnap = await get(ref(db, `contacts/${user.uid}`));
+      const contactsList = contactsSnap.exists() ? contactsSnap.val() : {};
+
+      snap.forEach(child => {
+        const uid = child.key;
+        const u = child.val();
+
+        if (uid === user.uid) return;
+        if (contactsList[uid]) return;
+
+        const div = document.createElement("div");
+        div.className = "conversation";
+        div.innerHTML = `
+          <strong>${u.displayName}</strong>
+          <button>Ajouter</button>
+        `;
+
+        div.querySelector("button").onclick = () => {
+          sendRequest(uid);
+          alert("Demande envoyée");
+        };
+
+        users.appendChild(div);
+      });
+    });
+
+    /* =========================
+       🔹 DEMANDES REÇUES
+    ==========================*/
+    onValue(ref(db, `contactRequests/${user.uid}`), async snap => {
       requests.innerHTML = "";
       if (!snap.exists()) return;
 
-      Object.keys(snap.val()).forEach(uid => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          ${uid}
-          <button onclick="accept('${uid}')">✔</button>
-          <button onclick="refuse('${uid}')">✖</button>
+      for (let uid in snap.val()) {
+        const userSnap = await get(ref(db, `users/${uid}`));
+        const u = userSnap.val();
+
+        const div = document.createElement("div");
+        div.className = "conversation";
+        div.innerHTML = `
+          <strong>${u.displayName}</strong>
+          <button>✔</button>
+          <button>✖</button>
         `;
-        requests.appendChild(li);
-      });
+
+        div.children[1].onclick = () => acceptRequest(uid);
+        div.children[2].onclick = () => refuseRequest(uid);
+
+        requests.appendChild(div);
+      }
     });
   });
-
-  add.onclick = async () => {
-    const user = await findUserByEmail(email.value);
-    if (!user) return alert("Utilisateur introuvable");
-    sendRequest(user.uid);
-  };
-
-  window.accept = acceptRequest;
-  window.refuse = refuseRequest;
 </script>
 
 </body>
