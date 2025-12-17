@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>HT Messenger - Chat</title>
-  <style>
-    #chat { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
-    .msg-left { text-align: left; background: #eee; margin: 5px; padding: 5px; border-radius: 5px; }
-    .msg-right { text-align: right; background: #8ecae6; color: white; margin: 5px; padding: 5px; border-radius: 5px; }
-  </style>
+  <title>Chat</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Conversation</h2>
-<div id="chat"></div>
-<input id="msg" placeholder="Écrire un message">
-<button id="send">Envoyer</button>
+<div class="container">
+  <div id="chat"></div>
+
+  <div class="chat-input">
+    <input id="msg" placeholder="Écrire un message">
+    <button id="send">Envoyer</button>
+  </div>
+
+  <button onclick="location.href='contacts.html'">⬅ Retour aux contacts</button>
+</div>
 
 <script type="module">
   import { loadMessages } from "./js/messages-list.js";
-  import { sendMessage } from "./js/messages.js";
+  import { sendMessage, markAsRead } from "./js/messages.js";
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const convId = urlParams.get("convId");
+  const convId = new URLSearchParams(location.search).get("convId");
+  const chatDiv = document.getElementById("chat");
 
-  loadMessages(convId, document.getElementById("chat"));
-  import { markAsRead } from "./js/messages.js";
+  loadMessages(convId, chatDiv);
+  markAsRead(convId);
 
-// Marquer les messages comme lus quand on ouvre le chat
-markAsRead(convId);
+  const msgInput = document.getElementById("msg");
+  const sendBtn = document.getElementById("send");
 
-  send.onclick = () => {
-    const content = msg.value.trim();
-    if (!content) return;
-    sendMessage(convId, content);
-    msg.value = "";
+  sendBtn.onclick = () => {
+    if (!msgInput.value.trim()) return;
+    sendMessage(convId, msgInput.value);
+    msgInput.value = "";
   };
 </script>
 
