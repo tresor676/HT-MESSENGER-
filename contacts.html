@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contacts - HT Messenger</title>
+</head>
+<body>
+
+<h2>Ajouter un contact</h2>
+
+<input id="email" placeholder="Email utilisateur">
+<button id="add">Envoyer demande</button>
+
+<hr>
+
+<h3>Demandes reçues</h3>
+<ul id="requests"></ul>
+
+<script type="module">
+  import { auth, db } from "./js/firebase.js";
+  import { findUserByEmail } from "./js/users-search.js";
+  import {
+    sendRequest,
+    acceptRequest,
+    refuseRequest
+  } from "./js/contacts.js";
+
+  import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  auth.onAuthStateChanged(user => {
+    if (!user) location.href = "login.html";
+
+    onValue(ref(db, "contactRequests/" + user.uid), snap => {
+      requests.innerHTML = "";
+      if (!snap.exists()) return;
+
+      Object.keys(snap.val()).forEach(uid => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${uid}
+          <button onclick="accept('${uid}')">✔</button>
+          <button onclick="refuse('${uid}')">✖</button>
+        `;
+        requests.appendChild(li);
+      });
+    });
+  });
+
+  add.onclick = async () => {
+    const user = await findUserByEmail(email.value);
+    if (!user) return alert("Utilisateur introuvable");
+    sendRequest(user.uid);
+  };
+
+  window.accept = acceptRequest;
+  window.refuse = refuseRequest;
+</script>
+
+</body>
+</html>
