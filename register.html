@@ -2,26 +2,30 @@
 <html>
 <head>
   <title>HT Messenger - Inscription</title>
-  <script type="module" src="js/auth.js"></script>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Créer un compte</h2>
+<div class="container">
+  <h2>Créer un compte</h2>
 
-<input id="name" placeholder="Nom">
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Mot de passe">
-<button id="btn">S'inscrire</button>
+  <input id="name" placeholder="Nom">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Mot de passe">
+
+  <button id="btn">S'inscrire</button>
+
+  <p style="text-align:center">
+    Déjà un compte ?
+    <a href="login.html">Se connecter</a>
+  </p>
+</div>
 
 <script type="module">
   import { register } from "./js/auth.js";
 
-  document.getElementById("btn").onclick = () => {
-    register(
-      email.value,
-      password.value,
-      name.value
-    );
+  btn.onclick = () => {
+    register(email.value, password.value, name.value);
   };
 </script>
 
