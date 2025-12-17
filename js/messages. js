@@ -1,0 +1,40 @@
+import { auth, db } from "./firebase.js";
+import { ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ➕ ENVOYER MESSAGE */
+export async function sendMessage(convId, content) {
+  const me = auth.currentUser.uid;
+
+  const messageRef = push(ref(db, `messages/${convId}`));
+  const messageId = messageRef.key;
+
+  const messageData = {
+    author: me,
+    content: content,
+    timestamp: serverTimestamp(),
+    status: "sent"
+  };
+
+  await set(messageRef, messageData);
+
+  // Mettre à jour la conversation
+  await set(ref(db, `conversations/${convId}/lastMessage`), content);
+  await set(ref(db, `conversations/${convId}/updatedAt`), serverTimestamp());
+
+  // Mettre à jour compteur unread pour les autres participants
+  const convSnap = await ref(db, `conversations/${convId}`);
+  convSnap.on("value", snapshot => {
+    const conv = snapshot.val();
+    for (let uid in conv.participants) {
+      if (uid !== me) {
+        const unreadRef = ref(db, `userConversations/${uid}/${convId}/unread`);
+        unreadRef.get().then(snap => {
+          const current = snap.exists() ? snap.val() : 0;
+          set(unreadRef, current + 1);
+        });
+      }
+    }
+  });
+
+  return messageId;
+}
