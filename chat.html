@@ -23,6 +23,10 @@
   const convId = urlParams.get("convId");
 
   loadMessages(convId, document.getElementById("chat"));
+  import { markAsRead } from "./js/messages.js";
+
+// Marquer les messages comme lus quand on ouvre le chat
+markAsRead(convId);
 
   send.onclick = () => {
     const content = msg.value.trim();
