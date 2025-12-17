@@ -8,10 +8,9 @@
 
 <div class="container">
   <h2>Mes contacts</h2>
+  <button id="toggle">Ajouter des contacts</button>
   <div id="contacts"></div>
-
-  <h2>Utilisateurs</h2>
-  <div id="users"></div>
+  <div id="users" style="display:none;"></div>
 
   <h2>Demandes reçues</h2>
   <div id="requests"></div>
@@ -21,59 +20,58 @@
 
 <script type="module">
   import { auth, db } from "./js/firebase.js";
-  import {
-    ref,
-    onValue,
-    get
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-  import {
-    sendRequest,
-    acceptRequest,
-    refuseRequest
-  } from "./js/contacts.js";
-
-  import {
-    createPrivateConversation
-  } from "./js/conversations.js";
+  import { ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { sendRequest, acceptRequest, refuseRequest } from "./js/contacts.js";
+  import { createPrivateConversation } from "./js/conversations.js";
 
   auth.onAuthStateChanged(user => {
     if (!user) location.href = "login.html";
 
-    /* =========================
-       🔹 CONTACTS ACCEPTÉS
-    ==========================*/
+    const toggleBtn = document.getElementById("toggle");
+    const contactsDiv = document.getElementById("contacts");
+    const usersDiv = document.getElementById("users");
+
+    toggleBtn.onclick = () => {
+      if(usersDiv.style.display === "none") {
+        usersDiv.style.display = "block";
+        contactsDiv.style.display = "none";
+        toggleBtn.innerText = "Mes contacts";
+      } else {
+        usersDiv.style.display = "none";
+        contactsDiv.style.display = "block";
+        toggleBtn.innerText = "Ajouter des contacts";
+      }
+    }
+
+    // 🔹 Mes contacts
     onValue(ref(db, `contacts/${user.uid}`), async snap => {
-      contacts.innerHTML = "";
+      contactsDiv.innerHTML = "";
       if (!snap.exists()) return;
 
       for (let uid in snap.val()) {
-        const userSnap = await get(ref(db, `users/${uid}`));
-        if (!userSnap.exists()) continue;
+        const uSnap = await get(ref(db, `users/${uid}`));
+        if (!uSnap.exists()) continue;
 
-        const u = userSnap.val();
+        const u = uSnap.val();
         const div = document.createElement("div");
         div.className = "conversation";
         div.innerHTML = `
-          <strong>${u.displayName}</strong>
+          <strong>${u.displayName || uid}</strong>
           <small>${u.online ? "🟢 en ligne" : "⚪ hors ligne"}</small>
         `;
 
-        /* 👉 CLIQUER = OUVRIR / CRÉER DISCUSSION */
         div.onclick = async () => {
           const convId = await createPrivateConversation(uid);
           location.href = `chat.html?convId=${convId}`;
         };
 
-        contacts.appendChild(div);
+        contactsDiv.appendChild(div);
       }
     });
 
-    /* =========================
-       🔹 UTILISATEURS (NON CONTACTS)
-    ==========================*/
+    // 🔹 Ajouter utilisateurs
     onValue(ref(db, "users"), async snap => {
-      users.innerHTML = "";
+      usersDiv.innerHTML = "";
       if (!snap.exists()) return;
 
       const contactsSnap = await get(ref(db, `contacts/${user.uid}`));
@@ -82,14 +80,13 @@
       snap.forEach(child => {
         const uid = child.key;
         const u = child.val();
-
         if (uid === user.uid) return;
         if (contactsList[uid]) return;
 
         const div = document.createElement("div");
         div.className = "conversation";
         div.innerHTML = `
-          <strong>${u.displayName}</strong>
+          <strong>${u.displayName || uid}</strong>
           <button>Ajouter</button>
         `;
 
@@ -98,25 +95,24 @@
           alert("Demande envoyée");
         };
 
-        users.appendChild(div);
+        usersDiv.appendChild(div);
       });
     });
 
-    /* =========================
-       🔹 DEMANDES REÇUES
-    ==========================*/
+    // 🔹 Demandes reçues
     onValue(ref(db, `contactRequests/${user.uid}`), async snap => {
-      requests.innerHTML = "";
+      const requestsDiv = document.getElementById("requests");
+      requestsDiv.innerHTML = "";
       if (!snap.exists()) return;
 
       for (let uid in snap.val()) {
-        const userSnap = await get(ref(db, `users/${uid}`));
-        const u = userSnap.val();
+        const uSnap = await get(ref(db, `users/${uid}`));
+        const u = uSnap.val();
 
         const div = document.createElement("div");
         div.className = "conversation";
         div.innerHTML = `
-          <strong>${u.displayName}</strong>
+          <strong>${u.displayName || uid}</strong>
           <button>✔</button>
           <button>✖</button>
         `;
@@ -124,7 +120,7 @@
         div.children[1].onclick = () => acceptRequest(uid);
         div.children[2].onclick = () => refuseRequest(uid);
 
-        requests.appendChild(div);
+        requestsDiv.appendChild(div);
       }
     });
   });
