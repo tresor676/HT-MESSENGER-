@@ -1,60 +1,28 @@
 import { auth, db } from "./firebase.js";
 import {
-  ref, set, remove, get, serverTimestamp
+  ref,
+  set,
+  remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* ➕ ENVOYER DEMANDE */
+/* 📩 ENVOYER DEMANDE */
 export async function sendRequest(targetUid) {
   const me = auth.currentUser.uid;
-
-  if (me === targetUid) return;
-
-  await set(ref(db, `contactRequests/${targetUid}/${me}`), {
-    date: serverTimestamp()
-  });
+  await set(ref(db, `contactRequests/${targetUid}/${me}`), true);
 }
 
-/* ✅ ACCEPTER */
-export async function acceptRequest(senderUid) {
+/* ✔ ACCEPTER DEMANDE */
+export async function acceptRequest(fromUid) {
   const me = auth.currentUser.uid;
 
-  await set(ref(db, `contacts/${me}/${senderUid}`), true);
-  await set(ref(db, `contacts/${senderUid}/${me}`), true);
+  await set(ref(db, `contacts/${me}/${fromUid}`), true);
+  await set(ref(db, `contacts/${fromUid}/${me}`), true);
 
-  await remove(ref(db, `contactRequests/${me}/${senderUid}`));
+  await remove(ref(db, `contactRequests/${me}/${fromUid}`));
 }
 
-/* ❌ REFUSER */
-export async function refuseRequest(senderUid) {
+/* ✖ REFUSER DEMANDE */
+export async function refuseRequest(fromUid) {
   const me = auth.currentUser.uid;
-  await remove(ref(db, `contactRequests/${me}/${senderUid}`));
+  await remove(ref(db, `contactRequests/${me}/${fromUid}`));
 }
-
-/* 🗑️ SUPPRIMER CONTACT */
-export async function removeContact(targetUid) {
-  const me = auth.currentUser.uid;
-
-  await remove(ref(db, `contacts/${me}/${targetUid}`));
-  await remove(ref(db, `contacts/${targetUid}/${me}`));
-}
-
-/* 🚫 BLOQUER */
-export async function blockUser(targetUid) {
-  const me = auth.currentUser.uid;
-
-  await set(ref(db, `blocked/${me}/${targetUid}`), true);
-  await removeContact(targetUid);
-}
-
-/* 🔓 DÉBLOQUER */
-export async function unblockUser(targetUid) {
-  const me = auth.currentUser.uid;
-  await remove(ref(db, `blocked/${me}/${targetUid}`));
-}
-
-/* 🔒 VÉRIFIER BLOCAGE */
-export async function isBlocked(targetUid) {
-  const me = auth.currentUser.uid;
-  const snap = await get(ref(db, `blocked/${targetUid}/${me}`));
-  return snap.exists();
-                   }
