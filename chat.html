@@ -1,52 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Chat</title>
+  <meta charset="UTF-8">
+  <title>HT Messenger — Chat</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="container">
-  <div id="messages"></div>
 
-  <div class="chat-input">
-    <input id="text" placeholder="Message">
-    <button id="send">Envoyer</button>
+  <!-- HEADER CHAT -->
+  <div id="chat-header">
+    <button id="back">⬅</button>
+    <div class="chat-title">
+      <strong id="chat-name">Conversation</strong>
+      <small id="chat-status">...</small>
+    </div>
   </div>
 
-  <button onclick="history.back()">⬅ Retour</button>
+  <!-- ZONE MESSAGES -->
+  <div id="messages"></div>
+
+  <!-- INPUT -->
+  <div class="chat-input">
+    <input id="text" placeholder="Écrire un message…">
+    <button id="send">➤</button>
+  </div>
+
 </div>
 
 <script type="module">
 import { auth, db } from "./js/firebase.js";
-import { ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  ref,
+  get,
+  push,
+  onChildAdded,
+  update,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 import { updateLastMessage } from "./js/conversations.js";
 
 const convId = new URLSearchParams(location.search).get("convId");
 const messagesDiv = document.getElementById("messages");
+const chatName = document.getElementById("chat-name");
+const chatStatus = document.getElementById("chat-status");
 
-onChildAdded(ref(db, `messages/${convId}`), snap => {
-  const msg = snap.val();
-  const div = document.createElement("div");
-  div.className = msg.author === auth.currentUser.uid ? "bubble me" : "bubble";
-  div.textContent = msg.text;
-  messagesDiv.appendChild(div);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+/* 🔙 retour */
+back.onclick = () => history.back();
+
+/* 🔐 auth */
+auth.onAuthStateChanged(async user => {
+  if (!user) return location.href = "login.html";
+
+  /* 🔹 charger conversation */
+  const convSnap = await get(ref(db, `conversations/${convId}`));
+  if (!convSnap.exists()) return alert("Conversation introuvable");
+
+  const conv = convSnap.val();
+
+  /* 🔹 conversation privée */
+  if (conv.type === "private") {
+    const otherUid = Object.keys(conv.participants)
+      .find(uid => uid !== user.uid);
+
+    const userSnap = await get(ref(db, `users/${otherUid}`));
+    if (userSnap.exists()) {
+      const u = userSnap.val();
+      chatName.textContent = u.displayName;
+      chatStatus.textContent = u.online ? "en ligne" : "hors ligne";
+    }
+  }
+
+  /* 🔹 écouter messages */
+  onChildAdded(ref(db, `messages/${convId}`), snap => {
+    const msg = snap.val();
+    const div = document.createElement("div");
+
+    div.className =
+      msg.author === user.uid
+        ? "bubble me"
+        : "bubble";
+
+    div.textContent = msg.text;
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
 });
 
+/* ✉️ envoyer message */
 send.onclick = async () => {
-  if (!text.value.trim()) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
 
   const msg = {
     author: auth.currentUser.uid,
-    text: text.value,
-    createdAt: Date.now()
+    text,
+    createdAt: serverTimestamp()
   };
 
   await push(ref(db, `messages/${convId}`), msg);
-  await updateLastMessage(convId, text.value);
-  text.value = "";
+  await updateLastMessage(convId, text);
+
+  document.getElementById("text").value = "";
 };
+
+/* ⌨️ envoyer avec Entrée */
+text.addEventListener("keydown", e => {
+  if (e.key === "Enter") send.click();
+});
 </script>
 
 </body>
