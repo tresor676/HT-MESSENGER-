@@ -1,15 +1,16 @@
 import { auth, db } from "./firebase.js";
 import {
   ref,
-  set,
   get,
+  set,
   push,
+  update,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* 🔍 TROUVER CONVERSATION PRIVÉE EXISTANTE */
-export async function findPrivateConversation(uidA, uidB) {
-  const snap = await get(ref(db, `userConversations/${uidA}`));
+/* 🔍 Trouver conversation privée existante */
+export async function findPrivateConversation(me, other) {
+  const snap = await get(ref(db, `userConversations/${me}`));
   if (!snap.exists()) return null;
 
   for (let convId in snap.val()) {
@@ -19,8 +20,8 @@ export async function findPrivateConversation(uidA, uidB) {
     const c = convSnap.val();
     if (
       c.type === "private" &&
-      c.participants[uidA] &&
-      c.participants[uidB]
+      c.participants[me] &&
+      c.participants[other]
     ) {
       return convId;
     }
@@ -28,29 +29,39 @@ export async function findPrivateConversation(uidA, uidB) {
   return null;
 }
 
-/* 💬 CRÉER / OUVRIR DISCUSSION PRIVÉE */
-export async function createPrivateConversation(targetUid) {
+/* 💬 Créer ou ouvrir conversation privée */
+export async function openPrivateConversation(otherUid) {
   const me = auth.currentUser.uid;
 
-  const existing = await findPrivateConversation(me, targetUid);
+  const existing = await findPrivateConversation(me, otherUid);
   if (existing) return existing;
 
   const convRef = push(ref(db, "conversations"));
   const convId = convRef.key;
 
-  await set(convRef, {
+  const conversation = {
     type: "private",
     participants: {
       [me]: true,
-      [targetUid]: true
+      [otherUid]: true
     },
-    createdAt: serverTimestamp(),
+    lastMessage: "",
     updatedAt: serverTimestamp(),
-    lastMessage: null
-  });
+    createdAt: serverTimestamp()
+  };
+
+  await set(convRef, conversation);
 
   await set(ref(db, `userConversations/${me}/${convId}`), { unread: 0 });
-  await set(ref(db, `userConversations/${targetUid}/${convId}`), { unread: 0 });
+  await set(ref(db, `userConversations/${otherUid}/${convId}`), { unread: 0 });
 
   return convId;
+}
+
+/* ✍️ Mettre à jour le dernier message */
+export async function updateLastMessage(convId, text) {
+  await update(ref(db, `conversations/${convId}`), {
+    lastMessage: text,
+    updatedAt: serverTimestamp()
+  });
 }
