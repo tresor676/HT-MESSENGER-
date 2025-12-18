@@ -1,37 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>HT Messenger</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <title>HT Messenger</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/conversations.js"></script>
 </head>
 <body>
+    <div class="container">
+        <h1>HT Messenger</h1>
+        <div id="conversation-list" class="conversation-list"></div>
+    </div>
 
-<div class="container">
-  <h1>HT MESSENGER</h1>
+    <script type="module">
+        import { getUserConversations } from './js/conversations.js';
+        import { getUser } from './js/users.js';
 
-  <nav>
-    <button onclick="go('contacts.html')">Contacts</button>
-    <button onclick="go('conversations.html')">Conversations</button>
-    <button onclick="logout()">Déconnexion</button>
-  </nav>
+        const currentUserId = "USER_UID"; // Remplacer par l'UID connecté
 
-  <p id="status" style="text-align:center"></p>
-</div>
+        async function renderConversations() {
+            const convs = await getUserConversations(currentUserId);
+            const listEl = document.getElementById('conversation-list');
+            listEl.innerHTML = "";
 
-<script type="module">
-  import { auth } from "./js/firebase.js";
-  import { setupPresence } from "./js/presence.js";
-  import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+            for (let conv of convs) {
+                let name = conv.type === "private" ? "User" : conv.name;
+                // Optionnel: récupérer le nom réel
+                if(conv.type === "private") {
+                    const otherId = conv.participants.find(uid => uid !== currentUserId);
+                    const user = await getUser(otherId);
+                    if(user) name = user.displayName;
+                }
 
-  auth.onAuthStateChanged(user => {
-    if (!user) location.href = "login.html";
-    setupPresence();
-    status.innerText = "Connecté : " + user.email;
-  });
+                const unread = conv.unread[currentUserId] || 0;
 
-  window.go = p => location.href = p;
-  window.logout = () => signOut(auth);
-</script>
+                const div = document.createElement("div");
+                div.className = "conversation-item";
+                div.innerHTML = `
+                    <span class="conv-name">${name}</span>
+                    <span class="conv-last">${conv.lastMessage || ""}</span>
+                    ${unread>0 ? `<span class="badge">${unread}</span>` : ""}
+                `;
+                div.onclick = () => { window.location.href = `chat.html?convId=${conv.id}` };
+                listEl.appendChild(div);
+            }
+        }
 
+        renderConversations();
+    </script>
 </body>
 </html>
