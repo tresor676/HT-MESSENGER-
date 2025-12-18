@@ -7,33 +7,45 @@
 <body>
 
 <div class="container">
-  <div id="chat"></div>
+  <div id="messages"></div>
 
   <div class="chat-input">
-    <input id="msg" placeholder="Écrire un message">
+    <input id="text" placeholder="Message">
     <button id="send">Envoyer</button>
   </div>
 
-  <button onclick="location.href='contacts.html'">⬅ Retour aux contacts</button>
+  <button onclick="history.back()">⬅ Retour</button>
 </div>
 
 <script type="module">
-import { loadMessages } from "./js/messages-list.js";
-import { sendMessage, markAsRead } from "./js/messages.js";
+import { auth, db } from "./js/firebase.js";
+import { ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { updateLastMessage } from "./js/conversations.js";
 
 const convId = new URLSearchParams(location.search).get("convId");
-const chatDiv = document.getElementById("chat");
+const messagesDiv = document.getElementById("messages");
 
-loadMessages(convId, chatDiv);
-markAsRead(convId);
+onChildAdded(ref(db, `messages/${convId}`), snap => {
+  const msg = snap.val();
+  const div = document.createElement("div");
+  div.className = msg.author === auth.currentUser.uid ? "bubble me" : "bubble";
+  div.textContent = msg.text;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
 
-const msgInput = document.getElementById("msg");
-const sendBtn = document.getElementById("send");
+send.onclick = async () => {
+  if (!text.value.trim()) return;
 
-sendBtn.onclick = () => {
-  if (!msgInput.value.trim()) return;
-  sendMessage(convId, msgInput.value);
-  msgInput.value = "";
+  const msg = {
+    author: auth.currentUser.uid,
+    text: text.value,
+    createdAt: Date.now()
+  };
+
+  await push(ref(db, `messages/${convId}`), msg);
+  await updateLastMessage(convId, text.value);
+  text.value = "";
 };
 </script>
 
