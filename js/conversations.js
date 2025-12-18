@@ -1,67 +1,79 @@
-import { auth, db } from "./firebase.js";
-import {
-  ref,
-  get,
-  set,
-  push,
-  update,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { db } from "./firebase-init.js";
+import { ref, push, set, get, update, child } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-/* 🔍 Trouver conversation privée existante */
-export async function findPrivateConversation(me, other) {
-  const snap = await get(ref(db, `userConversations/${me}`));
-  if (!snap.exists()) return null;
-
-  for (let convId in snap.val()) {
-    const convSnap = await get(ref(db, `conversations/${convId}`));
-    if (!convSnap.exists()) continue;
-
-    const c = convSnap.val();
-    if (
-      c.type === "private" &&
-      c.participants[me] &&
-      c.participants[other]
-    ) {
-      return convId;
+// Créer une conversation privée (1–1)
+export async function createPrivateConversation(user1, user2) {
+    // Vérifie si une conversation existe déjà
+    const convsSnapshot = await get(ref(db, `conversations`));
+    if (convsSnapshot.exists()) {
+        const convs = convsSnapshot.val();
+        for (let id in convs) {
+            const c = convs[id];
+            if (c.type === "private" && ((c.participants.includes(user1) && c.participants.includes(user2)))) {
+                return id; // conversation existante
+            }
+        }
     }
-  }
-  return null;
+
+    // Créer nouvelle conversation
+    const newConvRef = push(ref(db, 'conversations'));
+    const convData = {
+        type: "private",
+        participants: [user1, user2],
+        lastMessage: "",
+        updatedAt: Date.now(),
+        unread: { [user1]: 0, [user2]: 0 }
+    };
+    await set(newConvRef, convData);
+    return newConvRef.key;
 }
 
-/* 💬 Créer ou ouvrir conversation privée */
-export async function openPrivateConversation(otherUid) {
-  const me = auth.currentUser.uid;
+// Créer un groupe
+export async function createGroupConversation(adminId, groupName, members=[]) {
+    const newConvRef = push(ref(db, 'conversations'));
+    const convData = {
+        type: "group",
+        name: groupName,
+        admin: adminId,
+        participants: [adminId, ...members],
+        lastMessage: "",
+        updatedAt: Date.now(),
+        unread: {}
+    };
+    // Initialiser compteur non lus
+    convData.participants.forEach(uid => convData.unread[uid] = 0);
 
-  const existing = await findPrivateConversation(me, otherUid);
-  if (existing) return existing;
-
-  const convRef = push(ref(db, "conversations"));
-  const convId = convRef.key;
-
-  const conversation = {
-    type: "private",
-    participants: {
-      [me]: true,
-      [otherUid]: true
-    },
-    lastMessage: "",
-    updatedAt: serverTimestamp(),
-    createdAt: serverTimestamp()
-  };
-
-  await set(convRef, conversation);
-
-  await set(ref(db, `userConversations/${me}/${convId}`), { unread: 0 });
-  await set(ref(db, `userConversations/${otherUid}/${convId}`), { unread: 0 });
-
-  return convId;
+    await set(newConvRef, convData);
+    return newConvRef.key;
 }
 
-/* ✍️ Mettre à jour le dernier message */
-export async function updateLastMessage(convId, text) {
-  await update(ref(db, `conversations/${convId}`), {
-    lastMessage: text,
-    updatedAt: serverTimestamp()
-  });
+// Ajouter membre dans groupe
+export async function addMemberToGroup(convId, userId) {
+    const convRef = ref(db, `conversations/${convId}/participants`);
+    const snapshot = await get(convRef);
+    if (snapshot.exists()) {
+        const participants = snapshot.val();
+        if (!participants.includes(userId)) {
+            participants.push(userId);
+            await set(convRef, participants);
+            // Init unread
+            await set(ref(db, `conversations/${convId}/unread/${userId}`), 0);
+        }
+    }
 }
+
+// Obtenir toutes les conversations d’un utilisateur
+export async function getUserConversations(uid) {
+    const snapshot = await get(ref(db, 'conversations'));
+    const result = [];
+    if (snapshot.exists()) {
+        const convs = snapshot.val();
+        for (let id in convs) {
+            const c = convs[id];
+            if (c.participants.includes(uid)) {
+                result.push({ id, ...c });
+            }
+        }
+    }
+    return result;
+                                              }
