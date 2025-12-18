@@ -1,123 +1,189 @@
+/* =========================
+   RESET & BASE
+========================= */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
-  background: #f4f6f8;
-  color: #222;
+  background: #0f172a; /* bleu nuit */
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* =========================
+   CONTAINER GÉNÉRAL
+========================= */
 .container {
+  width: 100%;
   max-width: 420px;
-  margin: auto;
-  padding: 20px;
+  height: 90vh;
+  background: #020617;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 
-h1, h2 {
-  margin-bottom: 15px;
+/* =========================
+   TITRES
+========================= */
+h2 {
   text-align: center;
+  margin-bottom: 12px;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
 
+/* =========================
+   INPUTS & BOUTONS
+========================= */
 input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: #020617;
+  color: #fff;
+  border: 1px solid #1e293b;
+}
+
+input::placeholder {
+  color: #64748b;
 }
 
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  background: #007bff;
-  color: white;
-  font-size: 16px;
   cursor: pointer;
+  font-weight: 600;
+  background: #2563eb;
+  color: white;
 }
 
 button:hover {
-  background: #0056cc;
+  background: #1d4ed8;
 }
 
-a {
-  color: #007bff;
-  text-decoration: none;
+/* boutons secondaires */
+button.secondary {
+  background: #020617;
+  border: 1px solid #334155;
 }
 
-/* NAV */
-nav button {
-  margin-bottom: 10px;
+button.secondary:hover {
+  background: #020617;
+  border-color: #64748b;
 }
 
-/* CONVERSATIONS */
+/* =========================
+   LISTE CONVERSATIONS / CONTACTS
+========================= */
+#conversations,
+#contacts,
+#users,
+#requests {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+/* ITEM CONVERSATION */
 .conversation {
-  background: white;
   padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #1e293b;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .conversation:hover {
-  background: #eef2f7;
+  background: #020617;
 }
 
-.badge {
-  float: right;
-  background: red;
-  color: white;
-  border-radius: 12px;
-  padding: 2px 8px;
+.conversation strong {
+  font-size: 15px;
+}
+
+.conversation small {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* conversation avec bouton */
+.conversation button {
+  margin-top: 8px;
+  padding: 6px;
   font-size: 12px;
 }
 
-/* CHAT */
-#chat {
-  height: 420px;
+/* =========================
+   CHAT
+========================= */
+#messages {
+  flex: 1;
   overflow-y: auto;
-  background: #e9ebee;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
 }
 
-.msg-left,
-.msg-right {
-  max-width: 70%;
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  border-radius: 12px;
-  font-size: 14px;
+/* BULLES */
+.bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  background: #1e293b;
+  align-self: flex-start;
+  word-wrap: break-word;
 }
 
-.msg-left {
-  background: white;
+.bubble.me {
+  background: #2563eb;
+  align-self: flex-end;
 }
 
-.msg-right {
-  background: #007bff;
-  color: white;
-  margin-left: auto;
-}
-
-.msg-left small,
-.msg-right small {
-  display: block;
-  font-size: 11px;
-  opacity: 0.7;
-  margin-top: 2px;
-}
-
+/* =========================
+   INPUT CHAT
+========================= */
 .chat-input {
   display: flex;
-  gap: 5px;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .chat-input input {
   flex: 1;
-  }
+  margin: 0;
+}
+
+.chat-input button {
+  width: auto;
+  padding: 0 16px;
+}
+
+/* =========================
+   SCROLLBAR (OPTIONNEL)
+========================= */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
