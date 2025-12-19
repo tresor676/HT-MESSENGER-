@@ -8,19 +8,33 @@
 <body>
 
 <div class="app">
+
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <h3 id="userName">Utilisateur</h3>
-    <input id="friendEmail" placeholder="Email ami">
-    <button onclick="createChat()">Créer chat</button>
+    <div class="profile">
+      <span id="userName"></span>
+      <button onclick="logout()">⏻</button>
+    </div>
+
+    <div class="new-chat">
+      <input id="friendEmail" placeholder="Email contact">
+      <button onclick="createChat()">＋</button>
+    </div>
+
     <ul id="chatList"></ul>
-    <button onclick="logout()">Déconnexion</button>
   </div>
 
+  <!-- CHAT -->
   <div class="chat">
+    <div id="chatHeader">Sélectionne un chat</div>
     <div id="messages"></div>
-    <input id="messageInput" placeholder="Message">
-    <button onclick="sendMessage()">Envoyer</button>
+
+    <div class="send-box">
+      <input id="messageInput" placeholder="Message">
+      <button onclick="sendMessage()">➤</button>
+    </div>
   </div>
+
 </div>
 
 <script type="module" src="js/firebase.js"></script>
