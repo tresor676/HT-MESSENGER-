@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Chat HT Messenger</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script type="module" src="js/firebase-init.js"></script>
-    <script type="module" src="js/messages.js"></script>
-    <script type="module" src="js/conversations.js"></script>
-    <script type="module" src="js/users.js"></script>
+  <meta charset="UTF-8">
+  <title>Chat</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div id="messages" class="messages"></div>
-        <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Écrire un message...">
-            <button id="sendBtn">Envoyer</button>
-        </div>
-    </div>
 
-    <script type="module">
-        import { listenMessages, sendMessage, updateMessageStatus, markConversationAsRead } from './js/messages.js';
-        import { getUser } from './js/users.js';
-        import { getUserConversations } from './js/conversations.js';
+<div class="app">
+  <div class="sidebar">
+    <h3 id="userName">Utilisateur</h3>
+    <input id="friendEmail" placeholder="Email ami">
+    <button onclick="createChat()">Créer chat</button>
+    <ul id="chatList"></ul>
+    <button onclick="logout()">Déconnexion</button>
+  </div>
 
-        const currentUserId = "USER_UID"; // Remplacer par l'UID connecté
-        const params = new URLSearchParams
+  <div class="chat">
+    <div id="messages"></div>
+    <input id="messageInput" placeholder="Message">
+    <button onclick="sendMessage()">Envoyer</button>
+  </div>
+</div>
+
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
