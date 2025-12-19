@@ -1,7 +1,8 @@
+* { box-sizing: border-box; font-family: Arial; }
+
 body {
   margin: 0;
-  font-family: Arial;
-  background: #e5ddd5;
+  background: #ece5dd;
 }
 
 .login-box {
@@ -9,13 +10,13 @@ body {
   margin: 100px auto;
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .login-box input, button {
   width: 100%;
+  margin: 6px 0;
   padding: 8px;
-  margin: 5px 0;
 }
 
 .app {
@@ -27,7 +28,36 @@ body {
   width: 30%;
   background: #075E54;
   color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile {
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.new-chat {
+  display: flex;
+  padding: 5px;
+}
+
+.new-chat input {
+  flex: 1;
+}
+
+#chatList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+
+#chatList li {
+  padding: 10px;
+  border-bottom: 1px solid #0b6b61;
+  cursor: pointer;
 }
 
 .chat {
@@ -36,27 +66,35 @@ body {
   flex-direction: column;
 }
 
+#chatHeader {
+  padding: 10px;
+  background: #ededed;
+}
+
 #messages {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  background: #ece5dd;
 }
 
 .msg-me {
-  text-align: right;
-  margin: 5px;
   background: #dcf8c6;
-  display: inline-block;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 8px;
+  margin: 5px;
+  align-self: flex-end;
 }
 
 .msg-other {
-  text-align: left;
-  margin: 5px;
   background: white;
-  display: inline-block;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 8px;
+  margin: 5px;
+  align-self: flex-start;
 }
+
+.send-box {
+  display: flex;
+  padding: 10px;
+  background: #f0f0f0;
+  }
