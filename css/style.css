@@ -1,109 +1,62 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f2f2f2;
+  margin: 0;
+  font-family: Arial;
+  background: #e5ddd5;
 }
 
-.container {
-    width: 400px;
-    margin: 20px auto;
+.login-box {
+  width: 300px;
+  margin: 100px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
 }
 
-.conversation-list {
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px;
+.login-box input, button {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
 }
 
-.conversation-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.app {
+  display: flex;
+  height: 100vh;
 }
 
-.conversation-item:hover {
-    background: #f0f0f0;
+.sidebar {
+  width: 30%;
+  background: #075E54;
+  color: white;
+  padding: 10px;
 }
 
-.badge {
-    background: red;
-    color: #fff;
-    padding: 3px 7px;
-    border-radius: 50%;
-    font-size: 12px;
+.chat {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
 }
 
-.chat-container {
-    width: 400px;
-    margin: 20px auto;
-    background: #fff;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    height: 600px;
-    overflow: hidden;
+#messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #ece5dd;
 }
 
-.messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+.msg-me {
+  text-align: right;
+  margin: 5px;
+  background: #dcf8c6;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
 }
 
-.bubble {
-    max-width: 70%;
-    padding: 8px 12px;
-    margin: 5px 0;
-    border-radius: 15px;
-    position: relative;
-    word-wrap: break-word;
-}
-
-.bubble.left {
-    background: #eee;
-    align-self: flex-start;
-}
-
-.bubble.right {
-    background: #0084ff;
-    color: #fff;
-    align-self: flex-end;
-}
-
-.msg-author {
-    font-weight: bold;
-    display: block;
-    font-size: 12px;
-}
-
-.msg-status {
-    font-size: 10px;
-    position: absolute;
-    bottom: 2px;
-    right: 8px;
-}
-
-.input-area {
-    display: flex;
-    border-top: 1px solid #ddd;
-}
-
-#msgInput {
-    flex: 1;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-}
-
-#sendBtn {
-    border: none;
-    background: #0084ff;
-    color: #fff;
-    padding: 0 15px;
-    cursor: pointer;
+.msg-other {
+  text-align: left;
+  margin: 5px;
+  background: white;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
 }
