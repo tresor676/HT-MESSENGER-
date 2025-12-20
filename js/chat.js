@@ -1,13 +1,13 @@
 import { auth, db } from './firebase.js';
 import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const messageForm = document.getElementById('messageForm');
 const chatWindow = document.getElementById('chatWindow');
+const messageForm = document.getElementById('messageForm');
 const messageInput = document.getElementById('messageInput');
 
-const chatId = localStorage.getItem('chatId'); // Exemple pour choisir la discussion
+const chatId = localStorage.getItem('chatId'); // stocké lors du choix d'une discussion
 
-if (chatId) {
+if (chatId && chatWindow) {
     const messagesRef = collection(db, "discussions", chatId, "messages");
     const q = query(messagesRef, orderBy("timestamp"));
     onSnapshot(q, snapshot => {
@@ -18,6 +18,7 @@ if (chatId) {
             div.textContent = `${data.senderName}: ${data.text}`;
             chatWindow.appendChild(div);
         });
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     });
 }
 
