@@ -26,4 +26,4 @@ if (groupsList) {
             groupsList.appendChild(li);
         });
     });
-                }
+}
