@@ -2,28 +2,32 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>HomePage - Messenger</title>
+    <title>Home - Messenger</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Bienvenue sur Messenger</h1>
+    <header>
+        <h1>Messenger</h1>
+        <button id="logoutBtn">Déconnexion</button>
+    </header>
 
-    <section id="discussions">
-        <h2>Discussions</h2>
-        <ul id="discussionList"></ul>
-    </section>
+    <main>
+        <section id="discussions">
+            <h2>Discussions</h2>
+            <ul id="discussionList"></ul>
+        </section>
 
-    <section id="friends">
-        <h2>Amis</h2>
-        <ul id="friendsList"></ul>
-    </section>
+        <section id="friends">
+            <h2>Amis</h2>
+            <ul id="friendsList"></ul>
+        </section>
 
-    <section id="requests">
-        <h2>Demandes reçues / envoyées</h2>
-        <ul id="requestList"></ul>
-    </section>
+        <section id="requests">
+            <h2>Demandes reçues / envoyées</h2>
+            <ul id="requestList"></ul>
+        </section>
+    </main>
 
-    <script src="js/firebase.js"></script>
-    <script src="js/home.js"></script>
+    <script type="module" src="js/home.js"></script>
 </body>
 </html>
