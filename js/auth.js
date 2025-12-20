@@ -1,5 +1,5 @@
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -28,7 +28,6 @@ signupForm?.addEventListener('submit', async (e) => {
 
         await updateProfile(user, { displayName: `${firstName} ${lastName}`, photoURL });
 
-        // Ajouter user dans Firestore
         await setDoc(doc(db, "users", user.uid), {
             firstName,
             lastName,
@@ -38,7 +37,6 @@ signupForm?.addEventListener('submit', async (e) => {
 
         alert("Compte créé avec succès !");
         window.location.href = 'login.html';
-
     } catch (error) {
         alert(error.message);
     }
@@ -56,5 +54,19 @@ loginForm?.addEventListener('submit', async (e) => {
         window.location.href = 'index.html';
     } catch (error) {
         alert(error.message);
+    }
+});
+
+// LOGOUT
+const logoutBtn = document.getElementById('logoutBtn');
+logoutBtn?.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = 'login.html';
+});
+
+// REDIRECT IF NOT LOGGED IN
+onAuthStateChanged(auth, (user) => {
+    if (!user && !window.location.href.includes('login') && !window.location.href.includes('signup')) {
+        window.location.href = 'login.html';
     }
 });
