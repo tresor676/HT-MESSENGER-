@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <title>HomePage - Messenger</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <h1>Bienvenue sur Messenger</h1>
 
-<div class="auth-box">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Mot de passe">
-  <input id="name" placeholder="Nom">
-  <button id="loginBtn">Connexion</button>
-  <button id="registerBtn">Inscription</button>
-</div>
+    <section id="discussions">
+        <h2>Discussions</h2>
+        <ul id="discussionList"></ul>
+    </section>
 
-<script type="module" src="js/auth.js"></script>
+    <section id="friends">
+        <h2>Amis</h2>
+        <ul id="friendsList"></ul>
+    </section>
+
+    <section id="requests">
+        <h2>Demandes reçues / envoyées</h2>
+        <ul id="requestList"></ul>
+    </section>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
