@@ -1,28 +1,28 @@
 import { auth, db } from './firebase.js';
 import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const user = auth.currentUser;
+const discussionList = document.getElementById('discussionList');
+const friendsList = document.getElementById('friendsList');
+const requestList = document.getElementById('requestList');
 
 // Discussions
-const discussionList = document.getElementById('discussionList');
 if (discussionList) {
     const q = query(collection(db, "discussions"), orderBy("lastMessageTime", "desc"));
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(q, snapshot => {
         discussionList.innerHTML = '';
         snapshot.forEach(doc => {
             const data = doc.data();
             const li = document.createElement('li');
-            li.textContent = `${data.lastMessage} - ${new Date(data.lastMessageTime?.seconds*1000).toLocaleTimeString()}`;
+            li.textContent = `${data.lastMessage || ''} - ${data.lastMessageTime ? new Date(data.lastMessageTime.seconds * 1000).toLocaleTimeString() : ''}`;
             discussionList.appendChild(li);
         });
     });
 }
 
 // Amis
-const friendsList = document.getElementById('friendsList');
 if (friendsList) {
     const q = query(collection(db, "friends"));
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(q, snapshot => {
         friendsList.innerHTML = '';
         snapshot.forEach(doc => {
             const data = doc.data();
@@ -34,10 +34,9 @@ if (friendsList) {
 }
 
 // Demandes
-const requestList = document.getElementById('requestList');
 if (requestList) {
     const q = query(collection(db, "friendRequests"));
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(q, snapshot => {
         requestList.innerHTML = '';
         snapshot.forEach(doc => {
             const data = doc.data();
@@ -46,4 +45,4 @@ if (requestList) {
             requestList.appendChild(li);
         });
     });
-                }
+}
