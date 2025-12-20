@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup - Messenger</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Créer un compte</h1>
+
+    <form id="signupForm">
+        <input type="text" id="firstName" placeholder="Prénom" required>
+        <input type="text" id="lastName" placeholder="Nom" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Mot de passe" required>
+        <input type="file" id="profilePic" accept="image/*">
+        <button type="submit">S'inscrire</button>
+    </form>
+
+    <p>Déjà inscrit ? <a href="login.html">Se connecter</a></p>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
